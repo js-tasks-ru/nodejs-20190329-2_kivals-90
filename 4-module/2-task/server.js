@@ -2,7 +2,6 @@ const url = require('url');
 const http = require('http');
 const path = require('path');
 const fs = require('fs');
-const messages = require('../server_messages');
 const LimitSizeStream = require('./LimitSizeStream');
 
 const server = new http.Server();
@@ -14,7 +13,15 @@ server.on('request', (req, res) => {
   const writeStream = fs.createWriteStream(filepath, {flags: 'wx'});
   const limitStream = new LimitSizeStream({limit: 1024*1024});
 
-
+  const messages = {
+    200: 'File has deleted successfully',
+    201: 'File has uploaded successfully',
+    400: 'Incorrect file path',
+    404: 'File not found',
+    409: 'File has already existed',
+    413: 'File is too big',
+    500: 'Internal server error',
+  };
   const doResponse = (errorCode) => {
     res.statusCode = errorCode;
     res.end(messages[errorCode]);
